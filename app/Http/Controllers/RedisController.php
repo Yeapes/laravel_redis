@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 
 class RedisController extends Controller
@@ -48,7 +49,7 @@ class RedisController extends Controller
      */
     public function show($id)
     {
-        $cachedBlog = Redis::get('user_' . $id); 
+        $cachedBlog = Cache::get('user_' . $id); 
 
         if(isset($cachedBlog)) {
             $user = json_decode($cachedBlog, FALSE);
@@ -60,7 +61,7 @@ class RedisController extends Controller
             ]);
         }else {
             $user = User::find($id);
-            Redis::set('user_' . $id, $user);
+            Cache::set('user_' . $id, $user);
 
             return response()->json([
                 'status_code' => 201,
